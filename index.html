@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山富旅遊 richmond tours - 資料同步最終修正版</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --main-red: #C01B21;
+            --dark-gray: #333;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            color: var(--dark-gray);
+            background-color: #fff;
+        }
+
+        /* 固定導覽列 */
+        .navbar {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+            background: #fff;
+            z-index: 1050 !important;
+        }
+
+        .navbar-brand {
+            color: var(--main-red) !important;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        /* Banner 區 */
+        .hero-banner {
+            background: url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070') center/cover;
+            padding: 50px 0 80px 0;
+            min-height: 400px;
+        }
+
+        .search-container {
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.2);
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        /* 分頁樣式 */
+        .nav-tabs-custom {
+            display: flex;
+            border-bottom: 2px solid #eee;
+            background: #fff;
+        }
+
+            .nav-tabs-custom .nav-link {
+                flex: 1;
+                padding: 12px;
+                text-align: center;
+                border: none;
+                background: none;
+                color: #888;
+                border-bottom: 3px solid transparent;
+                cursor: pointer;
+            }
+
+                .nav-tabs-custom .nav-link.active {
+                    color: var(--main-red);
+                    border-bottom-color: var(--main-red);
+                    font-weight: bold;
+                }
+
+        /* 卡片與標題 */
+        .section-title {
+            border-left: 5px solid var(--main-red);
+            padding-left: 15px;
+            margin: 40px 0 25px 0;
+            font-weight: bold;
+        }
+
+        .tour-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s;
+            background: #fff;
+        }
+
+        .price-text {
+            color: var(--main-red);
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .btn-detail-trigger {
+            border: 1px solid var(--main-red);
+            color: var(--main-red);
+            border-radius: 4px;
+            padding: 5px 15px;
+            background: #fff;
+        }
+
+        /* 預選清單 UI */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .total-price-row {
+            padding: 15px 20px;
+            text-align: right;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--main-red);
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">實踐旅遊 <span style="font-weight:300; font-size:0.9rem; color:#666;">USC tours</span></a>
+            <div class="ms-auto">
+                <button class="btn btn-outline-dark position-relative" onclick="showTab('cart'); window.scrollTo({top: 0, behavior: 'smooth'});">
+                    <i class="bi bi-cart3"></i>
+                    <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-banner">
+        <div class="container">
+            <div class="search-container">
+                <div class="nav nav-tabs-custom">
+                    <button class="nav-link active" id="tab-all-btn" onclick="showTab('all')">精選</button>
+                    <button class="nav-link" id="tab-flight-btn" onclick="showTab('flight')">機票</button>
+                    <button class="nav-link" id="tab-cruise-btn" onclick="showTab('cruise')">郵輪</button>
+                    <button class="nav-link" id="tab-hotel-btn" onclick="showTab('hotel')">訂房</button>
+                    <button class="nav-link" id="tab-cart-btn" onclick="showTab('cart')">預選</button>
+                </div>
+                <div class="p-4">
+                    <div id="search-action-area">
+                        <div class="input-group border rounded overflow-hidden">
+                            <input type="text" id="keyword-input" class="form-control border-0" placeholder="搜尋目的地...">
+                            <button class="btn btn-danger rounded-0" onclick="performSearch()">搜尋</button>
+                        </div>
+                    </div>
+                    <div id="pane-cart-display" style="display:none;">
+                        <div id="upper-cart-list"></div>
+                        <div id="cart-total-price" class="total-price-row" style="display:none;"></div>
+                        <button class="btn btn-dark w-100 mt-3 py-2">前往結帳</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container mb-5">
+        <h3 class="section-title" id="grid-title">所有方案精選</h3>
+        <div id="items-grid-container">
+            <div class="row g-4" id="main-items-grid"></div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content border-0">
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <div class="col-lg-7"><img id="m-image" src="" class="img-fluid w-100 h-100" style="object-fit:cover; min-height:450px;"></div>
+                        <div class="col-lg-5 p-5 position-relative">
+                            <button type="button" class="btn-close position-absolute top-0 end-0 m-4" data-bs-dismiss="modal"></button>
+                            <h2 id="m-name" class="fw-bold mb-3"></h2>
+                            <p id="m-text" class="text-muted lh-lg mb-4"></p>
+                            <div class="bg-light p-4 rounded mb-4"><h2 id="m-price-val" class="text-danger fw-bold mt-1"></h2></div>
+                            <div class="d-grid"><button id="m-buy-btn" class="btn btn-danger btn-lg py-3 fw-bold">加入預選清單</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const travelDB = [
+            { id: 1, type: 'flight', name: "長榮航空 東京來回機票", desc: "成田/羽田自由搭配，早去晚回不浪費時間。包含30KG托運。", price: 15800, img: "https://image.cdn-eztravel.com.tw/6MPKf53qDJqAXa6f-v71XxnU9ZxCObMqIeNo_dw7grs/g:ce/aHR0cDovL3ZhY2F0aW9uLmNkbi1lenRyYXZlbC5jb20udHcvcG9pL2pwL1RZTy9Ub2t5byBUb3dlci9zaHV0dGVyc3RvY2tfMTI5NjExMjI1X1IxNjAwLmpwZw.jpg" },
+            { id: 2, type: 'flight', name: "中華航空 倫敦直飛機票", desc: "倫敦希斯洛機場直飛，省去轉機勞累。全新 A350 客機服務。", price: 32500, img: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800" },
+            { id: 3, type: 'cruise', name: "歌詩達郵輪 莎倫娜號", desc: "沖繩、石垣島5天4夜豪華假期。體驗義式風情海上移動城堡。", price: 17900, img: "https://images.unsplash.com/photo-1548574505-5e239809ee19?w=800" },
+            { id: 4, type: 'cruise', name: "地中海郵輪 榮耀號", desc: "基隆港出發最便利。施華洛世奇水晶樓梯與頂級設施。", price: 21900, img: "https://static.liontech.com.tw/ConsoleAPData/PublicationStatic/lion_tw_b2c_event/zh-tw/cruise/_ModelFile/PictureAndText/1470534/bffedd5970744bd6a991d3f3cc36c083.jpg" },
+            { id: 7, type: 'recommend', name: "日本北海道·極光破冰船", desc: "冬季限定：搭乘破冰船感受大海震撼。包含札幌白色燈樹節。", price: 28900, img: "https://images.unsplash.com/photo-1542044896530-05d85be9b11a?w=800" },
+            { id: 8, type: 'hotel', name: "京都 麗思卡爾頓酒店", desc: "坐落於鴨川畔，體驗古都傳統美學與現代極致奢華的完美融合。", price: 18500, img: "https://static.gltjp.com/glt/data/article/21000/20205/20230703_160551_f036a4c1_w1920.webp" },
+            { id: 9, type: 'hotel', name: "星野集團 RISONARE 小濱島", desc: "位於日本最南端八重山群島，享有私人沙灘與璀璨星空的度假天堂。", price: 12800, img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800" },
+        ];
+
+        let cartData = [];
+        let detailModal;
+
+        window.onload = () => {
+            detailModal = new bootstrap.Modal(document.getElementById('infoModal'));
+            renderItemsGrid('all');
+        };
+
+        function showTab(category) {
+            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${category}-btn`).classList.add('active');
+
+            const searchArea = document.getElementById('search-action-area');
+            const cartArea = document.getElementById('pane-cart-display');
+            const title = document.getElementById('grid-title');
+
+            if (category === 'cart') {
+                searchArea.style.display = 'none';
+                cartArea.style.display = 'block';
+                title.innerText = "您的預選清單";
+                renderAllSynchronizedUI(); // 點擊分頁時同步更新
+            } else {
+                searchArea.style.display = 'block';
+                cartArea.style.display = 'none';
+                const titleMap = { all: '所有方案精選', flight: '熱門機票方案', cruise: '精選郵輪航線', hotel: '熱門訂房優惠' };
+                title.innerText = titleMap[category];
+                renderItemsGrid(category);
+            }
+        }
+
+        function renderItemsGrid(category) {
+            const filtered = (category === 'all') ? travelDB : travelDB.filter(i => i.type === category);
+            const grid = document.getElementById('main-items-grid');
+            grid.innerHTML = filtered.map(item => `
+                    <div class="col-md-4">
+                        <div class="tour-card bg-white">
+                            <img src="${item.img}" class="w-100" style="height:200px; object-fit:cover;" onerror="this.src='https://via.placeholder.com/800x600?text=Image+Not+Found'">
+                            <div class="p-3 d-flex flex-column flex-grow-1">
+                                <h5 class="fw-bold mb-2">${item.name}</h5>
+                                <p class="text-muted small text-truncate mb-3">${item.desc}</p>
+                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                    <div class="price-text">NT$ ${item.price.toLocaleString()}</div>
+                                    <button class="btn btn-outline-danger btn-sm" onclick="openDetail(${item.id})">查看詳情</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        function openDetail(id) {
+            const item = travelDB.find(i => i.id === id);
+            document.getElementById('m-image').src = item.img;
+            document.getElementById('m-name').innerText = item.name;
+            document.getElementById('m-text').innerText = item.desc;
+            document.getElementById('m-price-val').innerText = `NT$ ${item.price.toLocaleString()}`;
+            document.getElementById('m-buy-btn').onclick = () => { addItemToCart(item); detailModal.hide(); };
+            detailModal.show();
+        }
+
+        function addItemToCart(item) {
+            cartData.push({ ...item, cartId: Date.now() });
+            renderAllSynchronizedUI(); // 加入後立即同步所有畫面
+            alert('已加入預選清單！');
+        }
+
+        function removeFromCart(cartId) {
+            cartData = cartData.filter(i => i.cartId !== cartId);
+            renderAllSynchronizedUI(); // 移除後立即同步所有畫面
+        }
+
+        // 同步所有 UI 區塊的關鍵函式
+        function renderAllSynchronizedUI() {
+            // 1. 更新導覽列數量
+            document.getElementById('cart-badge').innerText = cartData.length;
+
+            // 2. 更新上方白色區塊清單
+            const upperList = document.getElementById('upper-cart-list');
+            const totalPriceEl = document.getElementById('cart-total-price');
+
+            if (cartData.length === 0) {
+                upperList.innerHTML = '<div class="text-center py-4 text-muted">目前沒有行程</div>';
+                totalPriceEl.style.display = 'none';
+            } else {
+                upperList.innerHTML = cartData.map(i => `
+                        <div class="cart-item">
+                            <span>${i.name}</span>
+                            <div class="d-flex align-items-center">
+                                <span class="text-danger fw-bold me-3">NT$ ${i.price.toLocaleString()}</span>
+                                <i class="bi bi-trash btn-remove-item" style="cursor:pointer" onclick="removeFromCart(${i.cartId})"></i>
+                            </div>
+                        </div>
+                    `).join('');
+
+                const total = cartData.reduce((sum, item) => sum + item.price, 0);
+                totalPriceEl.innerHTML = `總價格：NT$ ${total.toLocaleString()}`;
+                totalPriceEl.style.display = 'block';
+            }
+
+            // 3. 更新下方「您的預選清單」方案卡片 (僅在預選分頁下生效)
+            if (document.getElementById('tab-cart-btn').classList.contains('active')) {
+                const grid = document.getElementById('main-items-grid');
+                if (cartData.length === 0) {
+                    grid.innerHTML = '<div class="col-12 text-center py-5 text-muted">目前沒有行程</div>';
+                } else {
+                    grid.innerHTML = cartData.map(item => `
+                            <div class="col-md-4">
+                                <div class="tour-card bg-white">
+                                    <img src="${item.img}" class="w-100" style="height:200px; object-fit:cover;">
+                                    <div class="p-3 d-flex flex-column flex-grow-1">
+                                        <h5 class="fw-bold mb-2">${item.name}</h5>
+                                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                                            <div class="price-text">NT$ ${item.price.toLocaleString()}</div>
+                                            <button class="btn btn-dark btn-sm" onclick="removeFromCart(${item.cartId})">移除此項</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                }
+            }
+        }
+
+        function performSearch() {
+            const kw = document.getElementById('keyword-input').value.toLowerCase();
+            const results = travelDB.filter(i => i.name.toLowerCase().includes(kw));
+            document.getElementById('grid-title').innerText = `搜尋結果: "${kw}"`;
+            renderItemsGrid('all'); // 暫時以 all 呈現搜尋結果
+        }
+    </script>
+</body>
+</html>
