@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>實踐旅遊 USC tours</title>
+    <title>實踐旅遊 USC tours - 會員系統版</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -18,7 +18,7 @@
             background-color: #fff;
         }
 
-        /* 固定導覽列 */
+        /* Navbar */
         .navbar {
             border-bottom: 1px solid #eee;
             padding: 15px 0;
@@ -32,7 +32,7 @@
             text-decoration: none;
         }
 
-        /* Banner 區 */
+        /* Banner */
         .hero-banner {
             background: url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070') center/cover;
             padding: 50px 0 80px 0;
@@ -48,7 +48,6 @@
             overflow: hidden;
         }
 
-        /* 分頁樣式 */
         .nav-tabs-custom {
             display: flex;
             border-bottom: 2px solid #eee;
@@ -72,7 +71,7 @@
                     font-weight: bold;
                 }
 
-        /* 卡片與標題 */
+        /* Cards */
         .section-title {
             border-left: 5px solid var(--main-red);
             padding-left: 15px;
@@ -97,15 +96,7 @@
             font-weight: bold;
         }
 
-        .btn-detail-trigger {
-            border: 1px solid var(--main-red);
-            color: var(--main-red);
-            border-radius: 4px;
-            padding: 5px 15px;
-            background: #fff;
-        }
-
-        /* 預選清單 UI */
+        /* Cart UI */
         .cart-item {
             display: flex;
             justify-content: space-between;
@@ -124,8 +115,9 @@
             border-top: 1px solid #eee;
         }
 
+        /* Footer */
         .footer-main {
-            background-color: #444; /* 深灰色背景 */
+            background-color: #444;
             color: #ddd;
             padding: 50px 0 20px 0;
             font-size: 0.85rem;
@@ -135,7 +127,6 @@
             color: #fff;
             font-weight: bold;
             margin-bottom: 20px;
-            font-size: 1rem;
         }
 
         .footer-links ul {
@@ -143,57 +134,9 @@
             padding: 0;
         }
 
-            .footer-links ul li {
-                margin-bottom: 8px;
-            }
-
         .footer-links a {
             color: #bbb;
             text-decoration: none;
-            transition: color 0.2s;
-        }
-
-            .footer-links a:hover {
-                color: #fff;
-            }
-
-        .footer-app-btn {
-            background: #555;
-            border: 1px solid #777;
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 5px;
-            display: inline-flex;
-            align-items: center;
-            margin-bottom: 10px;
-            width: 130px;
-            text-decoration: none;
-        }
-
-            .footer-app-btn i {
-                font-size: 1.2rem;
-                margin-right: 8px;
-            }
-
-        .social-icons a {
-            color: #fff;
-            background: #666;
-            width: 35px;
-            height: 35px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            margin-right: 10px;
-            font-size: 1.1rem;
-            text-decoration: none;
-        }
-
-        .qr-code-img {
-            width: 100px;
-            height: 100px;
-            background: #fff;
-            padding: 5px;
         }
 
         .copyright-bar {
@@ -203,20 +146,19 @@
             border-top: 1px solid #555;
             font-size: 0.8rem;
         }
-
-        .copyright-links a {
-            color: #bbb;
-            margin-left: 15px;
-            text-decoration: none;
-        }
     </style>
 </head>
 <body>
 
     <nav class="navbar sticky-top shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="#">實踐旅遊 <span style="font-weight:300; font-size:0.9rem; color:#666;">USC tours</span></a>
-            <div class="ms-auto">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand" href="javascript:location.reload()">實踐旅遊 <span style="font-weight:300; font-size:0.9rem; color:#666;">USC tours</span></a>
+
+            <div class="d-flex align-items-center">
+                <span id="user-display" class="me-3 small fw-bold text-secondary"></span>
+                <button class="btn btn-sm btn-outline-danger me-2" id="login-nav-btn" data-bs-toggle="modal" data-bs-target="#loginModal">登入/註冊</button>
+                <button class="btn btn-sm btn-dark me-2" id="logout-nav-btn" onclick="handleLogout()" style="display:none;">登出</button>
+
                 <button class="btn btn-outline-dark position-relative" onclick="showTab('cart'); window.scrollTo({top: 0, behavior: 'smooth'});">
                     <i class="bi bi-cart3"></i>
                     <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
@@ -238,14 +180,17 @@
                 <div class="p-4">
                     <div id="search-action-area">
                         <div class="input-group border rounded overflow-hidden">
-                            <input type="text" id="keyword-input" class="form-control border-0" placeholder="搜尋目的地...">
+                            <input type="text" id="keyword-input" class="form-control border-0" placeholder="搜尋目的地或產品名稱...">
                             <button class="btn btn-danger rounded-0" onclick="performSearch()">搜尋</button>
                         </div>
                     </div>
                     <div id="pane-cart-display" style="display:none;">
                         <div id="upper-cart-list"></div>
                         <div id="cart-total-price" class="total-price-row" style="display:none;"></div>
-                        <button class="btn btn-dark w-100 mt-3 py-2">前往結帳</button>
+                        <div class="row g-2 mt-3">
+                            <div class="col-6"><button class="btn btn-dark w-100 py-2">前往結帳</button></div>
+                            <div class="col-6"><button class="btn btn-outline-success w-100 py-2" onclick="exportCartToCSV()"><i class="bi bi-filetype-csv"></i> 匯出 CSV</button></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -258,6 +203,26 @@
             <div class="row g-4" id="main-items-grid"></div>
         </div>
     </main>
+
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0"><h5 class="modal-title fw-bold">會員登入</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="small text-muted">帳號</label>
+                        <input type="text" id="login-user" class="form-control" placeholder="請輸入帳號">
+                    </div>
+                    <div class="mb-3">
+                        <label class="small text-muted">密碼</label>
+                        <input type="password" id="login-pass" class="form-control" placeholder="請輸入密碼">
+                    </div>
+                    <button class="btn btn-danger w-100 mb-2" onclick="handleLogin()">登入</button>
+                    <button class="btn btn-outline-secondary w-100" onclick="handleRegister()">註冊新帳號</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -277,83 +242,32 @@
             </div>
         </div>
     </div>
+
     <footer class="footer-main">
-        <div class="container">
+        <div class="container text-center text-md-start">
             <div class="row">
-                <div class="col-md-3 footer-links">
-                    <div class="footer-title">實踐旅遊服務</div>
-                    <div class="row">
-                        <div class="col-6">
-                            <ul>
-                                <li><a href="#">國際機票</a></li>
-                                <li><a href="#">國外旅遊</a></li>
-                                <li><a href="#">票券活動</a></li>
-                                <li><a href="#">鐵道旅行</a></li>
-                                <li><a href="#">護照簽證</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-6">
-                            <ul>
-                                <li><a href="#">國內機票</a></li>
-                                <li><a href="#">遊輪</a></li>
-                                <li><a href="#">國內旅遊</a></li>
-                                <li><a href="#">國內飛機旅遊</a></li>
-                                <li><a href="#">高鐵國旅聯票</a></li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="col-md-4">
+                    <div class="footer-title">關於實踐旅遊</div>
+                    <p class="small text-muted">提供全球機票、郵輪、訂房一站式服務。</p>
                 </div>
-
-                <div class="col-md-2 footer-links">
-                    <div class="footer-title">&nbsp;</div>
-                    <ul>
-                        <li><a href="#">全球訂房</a></li>
-                        <li><a href="#">機 + 酒</a></li>
-                        <li><a href="#">環島之星</a></li>
-                        <li><a href="#">國內外租車</a></li>
-                    </ul>
+                <div class="col-md-4 text-center">
+                    <div class="footer-title">聯絡我們</div>
+                    <p class="small">電話: 07-667-8888</p>
                 </div>
-
-                <div class="col-md-3">
-                    <div class="footer-title">實踐旅遊 APP</div>
-                    <div class="d-flex flex-column">
-                        <a href="#" class="footer-app-btn"><i class="bi bi-apple"></i> iOS</a>
-                        <a href="#" class="footer-app-btn"><i class="bi bi-google-play"></i> Android</a>
-                    </div>
-                    <div class="footer-title mt-3">Follow us on</div>
-                    <div class="social-icons">
-                        <a href="#"><i class="bi bi-facebook"></i></a>
-                        <a href="#"><i class="bi bi-youtube"></i></a>
-                        <a href="#"><i class="bi bi-instagram"></i></a>
-                        <a href="#"><i class="bi bi-line"></i></a>
-                    </div>
-                </div>
-
-                <div class="col-md-3 text-end" style="font-size: 0.8rem; color: #999;">
-                    <p>
-                        旅遊產品由 實踐旅行社股份有限公司 提供<br>
-                        代表：吳昊恩 聯絡人：陳仁祥<br>
-                    </p>
-                    <p>
-                        其他產品由 實踐股份有限公司 提供<br>
-                    </p>
-                    <p>聯絡電話:667-8888（手機加 07）</p>
+                <div class="col-md-4 text-end">
+                    <div class="footer-title">Follow Us</div>
+                    <div class="h3"><i class="bi bi-facebook me-2"></i><i class="bi bi-instagram"></i></div>
                 </div>
             </div>
         </div>
-
-        <div class="copyright-bar">
-            <div class="container d-flex justify-content-between">
-                <div>Copyright © 2025 USC TOUR Co., Ltd. All rights reserved.</div>
-                <div class="copyright-links">
-                    <a href="#">隱私權保護政策及個資聲明</a> |
-                    <a href="#">交易安全</a>
-                </div>
-            </div>
+        <div class="copyright-bar text-center">
+            Copyright © 2025 USC TOUR Co., Ltd. All rights reserved.
         </div>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // 資料庫與變數初始化
         const travelDB = [
             { id: 1, type: 'flight', name: "長榮航空 東京來回機票", desc: "成田/羽田自由搭配，早去晚回不浪費時間。包含30KG托運。", price: 15800, img: "https://image.cdn-eztravel.com.tw/6MPKf53qDJqAXa6f-v71XxnU9ZxCObMqIeNo_dw7grs/g:ce/aHR0cDovL3ZhY2F0aW9uLmNkbi1lenRyYXZlbC5jb20udHcvcG9pL2pwL1RZTy9Ub2t5byBUb3dlci9zaHV0dGVyc3RvY2tfMTI5NjExMjI1X1IxNjAwLmpwZw.jpg" },
             { id: 2, type: 'flight', name: "中華航空 倫敦直飛機票", desc: "倫敦希斯洛機場直飛，省去轉機勞累。全新 A350 客機服務。", price: 32500, img: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800" },
@@ -365,13 +279,82 @@
         ];
 
         let cartData = [];
-        let detailModal;
+        let currentUser = null;
+        let usersDB = JSON.parse(localStorage.getItem('usc_users')) || {}; // 本地儲存所有使用者
+
+        let detailModal, loginModal;
 
         window.onload = () => {
             detailModal = new bootstrap.Modal(document.getElementById('infoModal'));
+            loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+
+            // 檢查是否已登入 (Session)
+            const sessionUser = sessionStorage.getItem('usc_login_user');
+            if (sessionUser && usersDB[sessionUser]) {
+                currentUser = sessionUser;
+                cartData = usersDB[currentUser].cart || [];
+                updateUserUI();
+            }
+
             renderItemsGrid('all');
+            renderAllSynchronizedUI();
         };
 
+        // --- 會員邏輯 ---
+        function handleRegister() {
+            const user = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+            if (!user || !pass) return alert("請輸入帳號密碼");
+            if (usersDB[user]) return alert("此帳號已被註冊");
+
+            usersDB[user] = { password: pass, cart: [] };
+            localStorage.setItem('usc_users', JSON.stringify(usersDB));
+            alert("註冊成功！請重新點擊登入。");
+        }
+
+        function handleLogin() {
+            const user = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+
+            if (usersDB[user] && usersDB[user].password === pass) {
+                currentUser = user;
+                sessionStorage.setItem('usc_login_user', user);
+                cartData = usersDB[currentUser].cart || [];
+
+                loginModal.hide();
+                updateUserUI();
+                renderAllSynchronizedUI();
+                alert(`歡迎回來，${user}！`);
+            } else {
+                alert("帳號或密碼錯誤");
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            sessionStorage.removeItem('usc_login_user');
+            cartData = [];
+            updateUserUI();
+            renderAllSynchronizedUI();
+            alert("已成功登出");
+        }
+
+        function updateUserUI() {
+            const loginNav = document.getElementById('login-nav-btn');
+            const logoutNav = document.getElementById('logout-nav-btn');
+            const userDisp = document.getElementById('user-display');
+            if (currentUser) {
+                loginNav.style.display = 'none';
+                logoutNav.style.display = 'inline-block';
+                userDisp.innerText = `👋 ${currentUser}`;
+            } else {
+                loginNav.style.display = 'inline-block';
+                logoutNav.style.display = 'none';
+                userDisp.innerText = '';
+            }
+        }
+
+        // --- UI 切換與渲染 ---
         function showTab(category) {
             document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`tab-${category}-btn`).classList.add('active');
@@ -384,7 +367,7 @@
                 searchArea.style.display = 'none';
                 cartArea.style.display = 'block';
                 title.innerText = "您的預選清單";
-                renderAllSynchronizedUI(); // 點擊分頁時同步更新
+                renderAllSynchronizedUI();
             } else {
                 searchArea.style.display = 'block';
                 cartArea.style.display = 'none';
@@ -398,20 +381,20 @@
             const filtered = (category === 'all') ? travelDB : travelDB.filter(i => i.type === category);
             const grid = document.getElementById('main-items-grid');
             grid.innerHTML = filtered.map(item => `
-                        <div class="col-md-4">
-                            <div class="tour-card bg-white">
-                                <img src="${item.img}" class="w-100" style="height:200px; object-fit:cover;" onerror="this.src='https://via.placeholder.com/800x600?text=Image+Not+Found'">
-                                <div class="p-3 d-flex flex-column flex-grow-1">
-                                    <h5 class="fw-bold mb-2">${item.name}</h5>
-                                    <p class="text-muted small text-truncate mb-3">${item.desc}</p>
-                                    <div class="mt-auto d-flex justify-content-between align-items-center">
-                                        <div class="price-text">NT$ ${item.price.toLocaleString()}</div>
-                                        <button class="btn btn-outline-danger btn-sm" onclick="openDetail(${item.id})">查看詳情</button>
-                                    </div>
+                    <div class="col-md-4">
+                        <div class="tour-card">
+                            <img src="${item.img}" class="w-100" style="height:200px; object-fit:cover;" onerror="this.src='https://via.placeholder.com/400x300?text=Image'">
+                            <div class="p-3 d-flex flex-column flex-grow-1">
+                                <h5 class="fw-bold mb-2">${item.name}</h5>
+                                <p class="text-muted small text-truncate mb-3">${item.desc}</p>
+                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                    <div class="price-text">NT$ ${item.price.toLocaleString()}</div>
+                                    <button class="btn btn-outline-danger btn-sm" onclick="openDetail(${item.id})">查看詳情</button>
                                 </div>
                             </div>
                         </div>
-                    `).join('');
+                    </div>
+                `).join('');
         }
 
         function openDetail(id) {
@@ -424,23 +407,30 @@
             detailModal.show();
         }
 
+        // --- 購物車核心邏輯 ---
         function addItemToCart(item) {
             cartData.push({ ...item, cartId: Date.now() });
-            renderAllSynchronizedUI(); // 加入後立即同步所有畫面
+            saveCartToDB();
+            renderAllSynchronizedUI();
             alert('已加入預選清單！');
         }
 
         function removeFromCart(cartId) {
             cartData = cartData.filter(i => i.cartId !== cartId);
-            renderAllSynchronizedUI(); // 移除後立即同步所有畫面
+            saveCartToDB();
+            renderAllSynchronizedUI();
         }
 
-        // 同步所有 UI 區塊的關鍵函式
+        function saveCartToDB() {
+            if (currentUser) {
+                usersDB[currentUser].cart = cartData;
+                localStorage.setItem('usc_users', JSON.stringify(usersDB));
+            }
+        }
+
         function renderAllSynchronizedUI() {
-            // 1. 更新導覽列數量
             document.getElementById('cart-badge').innerText = cartData.length;
 
-            // 2. 更新上方白色區塊清單
             const upperList = document.getElementById('upper-cart-list');
             const totalPriceEl = document.getElementById('cart-total-price');
 
@@ -449,40 +439,40 @@
                 totalPriceEl.style.display = 'none';
             } else {
                 upperList.innerHTML = cartData.map(i => `
-                            <div class="cart-item">
-                                <span>${i.name}</span>
-                                <div class="d-flex align-items-center">
-                                    <span class="text-danger fw-bold me-3">NT$ ${i.price.toLocaleString()}</span>
-                                    <i class="bi bi-trash btn-remove-item" style="cursor:pointer" onclick="removeFromCart(${i.cartId})"></i>
-                                </div>
+                        <div class="cart-item">
+                            <span>${i.name}</span>
+                            <div class="d-flex align-items-center">
+                                <span class="text-danger fw-bold me-3">NT$ ${i.price.toLocaleString()}</span>
+                                <i class="bi bi-trash text-muted" style="cursor:pointer" onclick="removeFromCart(${i.cartId})"></i>
                             </div>
-                        `).join('');
+                        </div>
+                    `).join('');
 
                 const total = cartData.reduce((sum, item) => sum + item.price, 0);
                 totalPriceEl.innerHTML = `總價格：NT$ ${total.toLocaleString()}`;
                 totalPriceEl.style.display = 'block';
             }
 
-            // 3. 更新下方「您的預選清單」方案卡片 (僅在預選分頁下生效)
+            // 同步下方的方案卡片 (如果是預選分頁)
             if (document.getElementById('tab-cart-btn').classList.contains('active')) {
                 const grid = document.getElementById('main-items-grid');
                 if (cartData.length === 0) {
                     grid.innerHTML = '<div class="col-12 text-center py-5 text-muted">目前沒有行程</div>';
                 } else {
                     grid.innerHTML = cartData.map(item => `
-                                <div class="col-md-4">
-                                    <div class="tour-card bg-white">
-                                        <img src="${item.img}" class="w-100" style="height:200px; object-fit:cover;">
-                                        <div class="p-3 d-flex flex-column flex-grow-1">
-                                            <h5 class="fw-bold mb-2">${item.name}</h5>
-                                            <div class="mt-auto d-flex justify-content-between align-items-center">
-                                                <div class="price-text">NT$ ${item.price.toLocaleString()}</div>
-                                                <button class="btn btn-dark btn-sm" onclick="removeFromCart(${item.cartId})">移除此項</button>
-                                            </div>
+                            <div class="col-md-4">
+                                <div class="tour-card">
+                                    <img src="${item.img}" class="w-100" style="height:200px; object-fit:cover;">
+                                    <div class="p-3 d-flex flex-column flex-grow-1">
+                                        <h5 class="fw-bold mb-2">${item.name}</h5>
+                                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                                            <div class="price-text">NT$ ${item.price.toLocaleString()}</div>
+                                            <button class="btn btn-dark btn-sm" onclick="removeFromCart(${item.cartId})">移除此項</button>
                                         </div>
                                     </div>
                                 </div>
-                            `).join('');
+                            </div>
+                        `).join('');
                 }
             }
         }
@@ -490,8 +480,50 @@
         function performSearch() {
             const kw = document.getElementById('keyword-input').value.toLowerCase();
             const results = travelDB.filter(i => i.name.toLowerCase().includes(kw));
+            const grid = document.getElementById('main-items-grid');
             document.getElementById('grid-title').innerText = `搜尋結果: "${kw}"`;
-            renderItemsGrid('all'); // 暫時以 all 呈現搜尋結果
+
+            if (results.length === 0) {
+                grid.innerHTML = '<div class="col-12 text-center py-5">找不到相關方案</div>';
+            } else {
+                grid.innerHTML = results.map(item => `
+                        <div class="col-md-4">
+                            <div class="tour-card">
+                                <img src="${item.img}" class="w-100" style="height:200px; object-fit:cover;">
+                                <div class="p-3 d-flex flex-column flex-grow-1">
+                                    <h5 class="fw-bold mb-2">${item.name}</h5>
+                                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                                        <div class="price-text">NT$ ${item.price.toLocaleString()}</div>
+                                        <button class="btn btn-outline-danger btn-sm" onclick="openDetail(${item.id})">查看詳情</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+            }
+        }
+
+        // --- CSV 匯出功能 ---
+        function exportCartToCSV() {
+            if (cartData.length === 0) return alert("購物車目前是空的");
+
+            let csvContent = "\uFEFF"; // BOM 避免亂碼
+            csvContent += "帳號,產品名稱,價格,加入時間\n";
+
+            cartData.forEach(item => {
+                const time = new Date(item.cartId).toLocaleString();
+                const row = `${currentUser || '未登入訪客'},${item.name},${item.price},${time}\n`;
+                csvContent += row;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", `USC_Cart_${currentUser || 'Guest'}_${new Date().toLocaleDateString()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
